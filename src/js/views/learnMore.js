@@ -1,43 +1,70 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
-
+import React, { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Context } from "../store/appContext";
 
-import "../../styles/demo.css";
+const LearnMore = () => {
+    const { type, id } = useParams();
+    const { store } = useContext(Context);
+    const [item, setItem] = useState(null);
 
-export const LearnMore = () => {
-	const { store, actions } = useContext(Context);
+    useEffect(() => {
+        console.log("Store data:", store);
+        console.log("Type:", type);
+        console.log("ID:", id);
 
-	return (
-		<div className="container">
-			<ul className="list-group">
-				{store.demo.map((item, index) => {
-					return (
-						<li
-							key={index}
-							className="list-group-item d-flex justify-content-between"
-							style={{ background: item.background }}>
-							<Link to={"/single/" + index}>
-								<span>Link to: {item.title}</span>
-							</Link>
-							{// Conditional render example
-							// Check to see if the background is orange, if so, display the message
-							item.background === "orange" ? (
-								<p style={{ color: item.initial }}>
-									Check store/flux.js scroll to the actions to see the code
-								</p>
-							) : null}
-							<button className="btn btn-success" onClick={() => actions.changeColor(index, "orange")}>
-								Change Color
-							</button>
-						</li>
-					);
-				})}
-			</ul>
-			<br />
-			<Link to="/">
-				<button className="btn btn-primary">Back home</button>
-			</Link>
-		</div>
-	);
+        let foundItem = null;
+
+        if (type === "characters") {
+            foundItem = store.characters.find((character) => String(character.uid) === String(id));
+        } else if (type === "planets") {
+            foundItem = store.planets.find((planet) => String(planet.uid) === String(id));
+        } else if (type === "vehicles") {
+            foundItem = store.vehicles.find((vehicle) => String(vehicle.uid) === String(id));
+        }
+
+        console.log("Found Item:", foundItem);
+        setItem(foundItem || null);
+    }, [type, id, store.characters, store.planets, store.vehicles]);
+
+    if (
+        (type === "characters" && store.characters.length === 0) ||
+        (type === "planets" && store.planets.length === 0) ||
+        (type === "vehicles" && store.vehicles.length === 0)
+    ) {
+        return <div>Loading {type}...</div>;
+    }
+
+    if (!item) {
+        return <div>Item not found in store!</div>;
+    }
+
+    return (
+        <div>
+            <h1>{item.name}</h1>
+            <p>Details about this {type}:</p>
+            {type === "characters" && (
+                <>
+                    <p>Gender: {item.gender}</p>
+                    <p>Hair Color: {item.hair_color}</p>
+                    <p>Eye Color: {item.eye_color}</p>
+                </>
+            )}
+            {type === "planets" && (
+                <>
+                    <p>Population: {item.population}</p>
+                    <p>Terrain: {item.terrain}</p>
+                    <p>Climate: {item.climate}</p>
+                </>
+            )}
+            {type === "vehicles" && (
+                <>
+                    <p>Manufacturer: {item.manufacturer}</p>
+                    <p>Cost in Credits: {item.cost_in_credits}</p>
+                    <p>Max Atmosphering Speed: {item.max_atmosphering_speed}</p>
+                </>
+            )}
+        </div>
+    );
 };
+
+export default LearnMore;

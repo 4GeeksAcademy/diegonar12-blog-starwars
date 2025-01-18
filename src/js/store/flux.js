@@ -4,6 +4,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             characters: [],
             planets: [],
             vehicles: [],
+            favorites: [],
         },
         actions: {
             fetchCharacters: async () => {
@@ -80,6 +81,18 @@ const getState = ({ getStore, getActions, setStore }) => {
                     console.error("Error fetching vehicles:", error);
                     setStore({ error: error.message, loading: false });
                 }
+            },
+            addToFavorites: (item) => {
+                const store = getStore();
+                const exists = store.favorites.some((fav) => fav.uid === item.uid);
+                if (!exists) {
+                    setStore({ favorites: [...store.favorites, item] });
+                }
+            },
+            removeFromFavorites: (uid) => {
+                const store = getStore();
+                const updatedFavorites = store.favorites.filter((fav) => fav.uid !== uid);
+                setStore({ favorites: updatedFavorites });
             },
         },
     };

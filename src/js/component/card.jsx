@@ -79,7 +79,6 @@ const Card = ({ item, type, onAddToFavorites }) => {
                     </a>
                     <button
                         className="btn btn-outline-warning"
-                        style={{ border: "none", background: "transparent" }}
                         onClick={() => onAddToFavorites(item)}
                     >
                         <i className="bi bi-heart"></i>
